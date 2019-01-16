@@ -13,7 +13,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 
-@CrearecBeanState(CrearecStateType.STATEFUL)
+@CrearecBeanState(CrearecStateType.STATELESS)
 public class AddCustomerCommandImpl extends UnicastRemoteObject implements AddCustomerCommand, Remote {
 
 	private static final long serialVersionUID = -5947057176466325544L;

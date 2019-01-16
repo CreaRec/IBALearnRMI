@@ -17,6 +17,11 @@ public class Worker<T extends TransferObject> implements Callable<T> {
 
 	@Override
 	public T call() throws Exception {
-		return command.execute(transferObject);
+		try {
+			return command.execute(transferObject);
+		} catch (Exception e) {
+			transferObject.setErrorMessage("500 INTERNAL ERROR");
+			return transferObject;
+		}
 	}
 }
