@@ -12,8 +12,8 @@ public class SqlBuilder {
 	private static final String SQL_INSERT = "INSERT INTO %s.%s (%s) VALUES (%s)";
 	private static final String SQL_DELETE = "DELETE FROM %s.%s WHERE id = ?";
 	private static final String SQL_NEXT_ID = "SELECT nextval('%s.%s_id_seq'::regclass)";
-	private static final String SQL_SELECT_BY_ID = "SELECT %s FROM %s.%s WHERE id = ?)";
-	private static final String SQL_SELECT = "SELECT %s FROM %s.%s)";
+	private static final String SQL_SELECT_BY_ID = "SELECT %s FROM %s.%s WHERE id = ?";
+	private static final String SQL_SELECT = "SELECT %s FROM %s.%s";
 
 	private final String schema = "public";
 
@@ -50,20 +50,34 @@ public class SqlBuilder {
 		List<Field> fields = ClassUtils.getFields(clazz);
 		StringBuilder fieldsInLine = new StringBuilder();
 		for (final Field field : fields) {
-			fieldsInLine.append(field.getName());
-			fieldsInLine.append(", ");
+			if (!field.isAnnotationPresent(CrearecNotSql.class)) {
+				String fieldName = field.getName();
+				if (field.isAnnotationPresent(CrearecAliasSql.class)) {
+					fieldName = field.getAnnotation(CrearecAliasSql.class).value();
+				}
+				fieldsInLine.append(fieldName);
+				fieldsInLine.append(", ");
+			}
 		}
-		return String.format(SQL_SELECT_BY_ID, fieldsInLine, schema, clazz.getCanonicalName());
+		removeLastComma(fieldsInLine);
+		return String.format(SQL_SELECT_BY_ID, fieldsInLine, schema, clazz.getSimpleName());
 	}
 
 	public String getSelectSQL(final Class<? extends Entity> clazz) {
 		List<Field> fields = ClassUtils.getFields(clazz);
 		StringBuilder fieldsInLine = new StringBuilder();
 		for (final Field field : fields) {
-			fieldsInLine.append(field.getName());
-			fieldsInLine.append(", ");
+			if (!field.isAnnotationPresent(CrearecNotSql.class)) {
+				String fieldName = field.getName();
+				if (field.isAnnotationPresent(CrearecAliasSql.class)) {
+					fieldName = field.getAnnotation(CrearecAliasSql.class).value();
+				}
+				fieldsInLine.append(fieldName);
+				fieldsInLine.append(", ");
+			}
 		}
-		return String.format(SQL_SELECT, fieldsInLine, schema, clazz.getCanonicalName());
+		removeLastComma(fieldsInLine);
+		return String.format(SQL_SELECT, fieldsInLine, schema, clazz.getSimpleName().toLowerCase());
 	}
 
 	public String getDeleteSQL(final Class<? extends Entity> clazz) {

@@ -11,7 +11,7 @@ import java.util.List;
 
 public class CustomerJdbcDao extends JdbcDaoSupport implements CustomerDao {
 
-	private RowMapper<Customer> rowMap = new RowMapperImpl<>();
+	private RowMapper<Customer> rowMap = new RowMapperImpl<>(new Customer());
 	private SqlBuilder builder = new SqlBuilder();
 
 	@Override

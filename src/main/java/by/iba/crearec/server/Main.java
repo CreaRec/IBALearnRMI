@@ -1,32 +1,22 @@
 package by.iba.crearec.server;
 
-import by.iba.crearec.command.AddCustomerCommand;
-import by.iba.crearec.command.AddCustomerCommandImpl;
-import by.iba.crearec.command.Command;
-import by.iba.crearec.command.ServerCommandManager;
+import by.iba.crearec.server.servlet.HelloServlet;
+import org.jboss.weld.environment.se.Weld;
+import org.jboss.weld.environment.se.WeldContainer;
 
+import java.io.IOException;
 import java.rmi.AlreadyBoundException;
-import java.rmi.Remote;
-import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-import java.rmi.server.UnicastRemoteObject;
-import java.util.HashMap;
-import java.util.Map;
 
 public class Main {
 
-	public static void main(String[] args) throws RemoteException, AlreadyBoundException {
+	public static void main(String[] args) throws AlreadyBoundException, IOException {
 		System.out.println("Starting...");
-		Registry registry = LocateRegistry.createRegistry(2005);
-		ServerCommandManagerImpl scm = new ServerCommandManagerImpl();
 
-		Map<Class, Command> commands = new HashMap<>();
-		commands.put(AddCustomerCommand.class, new AddCustomerCommandImpl());
-		scm.setCommands(commands);
+		Weld weld = new Weld();
+		WeldContainer container = weld.initialize();
+		Initialize initialize = container.select(Initialize.class).get();
+		initialize.run();
 
-		Remote remoteServerCommandManager = UnicastRemoteObject.exportObject(scm, 2005);
-		registry.bind(ServerCommandManager.class.getSimpleName(), remoteServerCommandManager);
-		System.out.println("Running...");
+		System.out.println("666 Running...");
 	}
 }

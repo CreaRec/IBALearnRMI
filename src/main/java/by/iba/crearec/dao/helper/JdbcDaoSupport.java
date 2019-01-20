@@ -1,6 +1,7 @@
 package by.iba.crearec.dao.helper;
 
 import by.iba.crearec.annotation.CrearecNotSql;
+import by.iba.crearec.model.Customer;
 import by.iba.crearec.model.Entity;
 
 import java.lang.reflect.Field;
@@ -59,12 +60,15 @@ public class JdbcDaoSupport {
 		List<T> objs = new ArrayList<>();
 
 		try (Connection con = getConnection(); PreparedStatement statement = con.prepareStatement(sql)) {
-			List<Field> fields = ClassUtils.getFields(param.getClass());
-			for (int i = 0; i < fields.size(); i++) {
-				statement.setObject(i + 1, fields.get(i));
+			if (param != null) {
+				List<Field> fields = ClassUtils.getFields(param.getClass());
+				for (int i = 0; i < fields.size(); i++) {
+					statement.setObject(i + 1, fields.get(i));
+				}
 			}
 			try (ResultSet rs = statement.executeQuery()) {
 				while (rs.next()) {
+					rowMap.setObj((T) new Customer());
 					objs.add(rowMap.rowMap(rs));
 				}
 			} catch (IllegalAccessException e) {
